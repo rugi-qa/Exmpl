@@ -7,7 +7,7 @@ def sigmoid(x):
 def div(x):
     return sigmoid(x)*(1 - sigmoid(x))
 
-def qual(y_pred, y_true):
+def qual(y_true, y_pred):
     return ((y_true - y_pred) ** 2).mean()
 
 
@@ -53,31 +53,26 @@ class oneNeuralNetwork:
         return self.resultNN
 
     def train(self, x_data, y_data):
-        for x, y_true in zip(x_data, y_data):
-            epochs = 1000
-            step = 0.01
-
-            y_pred = self.feedforward(x)
-
-            for epoch in range(epochs):
-
+        epochs = 1000
+        step = 0.01
+        for epoch in range(epochs):
+            for x, y_true in zip(x_data, y_data):
+                y_pred = self.feedforward(x)               
                 e = y_pred - y_true
-
                 delta = e * div(y_pred)
-
                 for i in range(len(self.networkOutput.weights)):
-                    self.networkOutput.weights[i] = self.networkOutput.weights[i] - step * delta * self.inputs_for_outputNeuron[i]
+                        self.networkOutput.weights[i] = self.networkOutput.weights[i] - step * delta * self.inputs_for_outputNeuron[i]
                 self.deltaNeuron = []
 
                 for i in range(self.amountNeuron):
-                    self.deltaNeuron.append(delta*self.networkOutput.weights[i]*div(self.inputs_for_outputNeuron[i]))
-                    for j in range(len(self.networkNeurons[i].weights)):
-                        self.networkNeurons[i].weights[j] = self.networkNeurons[i].weights[j] - step * self.deltaNeuron[i] * x
+                        self.deltaNeuron.append(delta*self.networkOutput.weights[i]*div(self.inputs_for_outputNeuron[i]))
+                        for j in range(len(self.networkNeurons[i].weights)):
+                            self.networkNeurons[i].weights[j] = self.networkNeurons[i].weights[j] - step * self.deltaNeuron[i] * x[j]
 
                 if epoch % 10 == 0:
-                    y_pred = np.apply_along_axis(self.feedforward, 1, x_data)
-                    loss = qual(y_pred, y_data)
-                    print("Epoch %d loss: %.3f" % (epoch, loss))
+                        y_pred = np.apply_along_axis(self.feedforward, 1, x_data)
+                        loss = qual(y_data, y_pred)
+                        print("Epoch %d loss: %.3f" % (epoch, loss))
 
 test_nn_1 = oneNeuralNetwork(2,3)
 
