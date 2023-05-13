@@ -48,3 +48,26 @@ class oneNeuralNetwork:
 test_nn_1 = oneNeuralNetwork(3,2)
 print(test_nn_1.networkNeurons[1].weights)
 print(test_nn_1.feedforward([1, 2]))
+
+x_data = np.array([
+  [5, 3, 2],  #  Axe
+  [2, 2, 6],  #  Keeper
+  [1, 5, 4],  #  Drow
+  [2, 5, 3],  #  Slark
+  [4, 2, 4],  #  Shaker
+  [6, 2, 2],  #  Pudge
+  [2, 4, 4],  #  Fiend
+  [2, 3, 5],  #  Dazzle
+  [5, 2, 3]   #  Mars
+])
+y_data = np.array([
+  0,  #  Tank
+  0.5,  #  Support
+  1,  #  Carry
+  1,
+  0.5,
+  0,
+  1,
+  0.5,
+  0
+])
