@@ -4,6 +4,13 @@ def sigmoid(x):
   # Наша функция активации: f(x) = 1 / (1 + e^(-x))
   return 1 / (1 + np.exp(-x))
 
+def div(x):
+    return sigmoid(x)*(1 - sigmoid(x))
+
+def qual(y_pred, y_true):
+    return ((y_true - y_pred) ** 2).mean()
+
+
 class Neuron:
     def __init__(self, weights, bias):
         self.weights = weights
@@ -45,9 +52,34 @@ class oneNeuralNetwork:
         self.resultNN = self.networkOutput.feedforward(self.inputs_for_outputNeuron)
         return self.resultNN
 
-test_nn_1 = oneNeuralNetwork(3,2)
-print(test_nn_1.networkNeurons[1].weights)
-print(test_nn_1.feedforward([1, 2]))
+    def train(self, x_data, y_data):
+        for x, y_true in zip(x_data, y_data):
+            epochs = 1000
+            step = 0.01
+
+            y_pred = self.feedforward(x)
+
+            for epoch in range(epochs):
+
+                e = y_pred - y_true
+
+                delta = e * div(y_pred)
+
+                for i in range(len(self.networkOutput.weights)):
+                    self.networkOutput.weights[i] = self.networkOutput.weights[i] - step * delta * self.inputs_for_outputNeuron[i]
+                self.deltaNeuron = []
+
+                for i in range(self.amountNeuron):
+                    self.deltaNeuron.append(delta*self.networkOutput.weights[i]*div(self.inputs_for_outputNeuron[i]))
+                    for j in range(len(self.networkNeurons[i].weights)):
+                        self.networkNeurons[i].weights[j] = self.networkNeurons[i].weights[j] - step * self.deltaNeuron[i] * x
+
+                if epoch % 10 == 0:
+                    y_pred = np.apply_along_axis(self.feedforward, 1, x_data)
+                    loss = qual(y_pred, y_data)
+                    print("Epoch %d loss: %.3f" % (epoch, loss))
+
+test_nn_1 = oneNeuralNetwork(2,3)
 
 x_data = np.array([
   [5, 3, 2],  #  Axe
@@ -71,3 +103,9 @@ y_data = np.array([
   0.5,
   0
 ])
+
+test_nn_1.train(x_data, y_data)
+
+fura = np.array([2, 3, 5])
+
+print("Фурион: %.3f" % test_nn_1.feedforward(fura))
